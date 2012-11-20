@@ -37,7 +37,6 @@ static strip_annoying_characters(name) {
         name = substr(name, 0, strstr(name, "__")) + "_" + substr(name, strstr(name, "__") + 2, -1);
     }
 
-
     Message("Stripped out the characters: %s\n", name);
     return name;
 }
