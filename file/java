@@ -1,0 +1,54 @@
+
+#------------------------------------------------------------
+# $File: java,v 1.14 2013/02/08 16:54:45 christos Exp $
+# Java ByteCode and Mach-O binaries (e.g., Mac OS X) use the
+# same magic number, 0xcafebabe, so they are both handled
+# in the entry called "cafebabe".
+#------------------------------------------------------------
+# Java serialization
+# From Martin Pool (m.pool@pharos.com.au)
+0	beshort		0xaced		Java serialization data
+>2	beshort		>0x0004		\b, version %d
+
+0	belong		0xfeedfeed	Java KeyStore
+!:mime	application/x-java-keystore
+0	belong		0xcececece	Java JCE KeyStore
+!:mime	application/x-java-jce-keystore
+
+# Dalvik .dex format. http://retrodev.com/android/dexformat.html
+# From <mkf@google.com> "Mike Fleming"
+# Fixed to avoid regexec 17 errors on some dex files
+# From <diff@lookout.com> "Tim Strazzere"
+0 string		   dex\n
+>0			   regex	dex\n[0-9]{2}\0		       Dalvik dex file
+>4			   string	>000			       	      	  version %s
+0			   string	dey\n
+>0			   regex	dey\n[0-9]{2}\0		       Dalvik dex file (optimized for host)
+>4			   string	>000			       	      	  version %s
+
+# Java source
+0	regex	^import.*;$	Java source
+!:mime	text/x-java
+
+# http://android.stackexchange.com/questions/23357/\
+# is-there-a-way-to-look-inside-and-modify-an-adb-backup-created-file/\
+# 23608#23608
+0	string	ANDROID\040BACKUP\n	Android Backup
+>15	string	1\n			\b, version 1
+>17	string	0\n			\b, uncompressed
+>17	string	1\n			\b, compressed
+>19	string	none\n			\b, unencrypted
+>19	string	AES-256\n		\b, encrypted AES-256
+
+# Android zImage boot/recovery Images
+# File format found here: ttps://github.com/android/platform_system_core/blob/master/mkbootimg/bootimg.h
+# From <diff@lookout.com> "Tim Strazzere"
+0 	string ANDROID!			Android Boot/Recovery zImage
+
+# Below two files are of Android Resource types, always should begin with the resource
+# chunk header identifying their types (table/xml) with a set size
+# From <diff@lookout.com> "Tim Strazzere"
+# Android Compiled Resources File (.arsc)
+0 	belong 0x02000c00		Android Compiled Resources
+# Android Compiled XML (Manifest) File
+0 	belong 0x03000800		Android Compiled XML
