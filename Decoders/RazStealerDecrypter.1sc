@@ -44,7 +44,7 @@ if(ReadUByte(0) != 0x64 && ReadUByte(1) != 0x65 && ReadUByte(2) != 0x78) {
 
 // Strings indexes must be sorted alphanumerical, so if we find
 // a grouping of encrypted strings we can stop once we detect a
-// non-encryoted string
+// non-encrypted string
 
 // Number of string indexes is dex_string_ids size / uint size
 int i, found_encrypted = 0;
