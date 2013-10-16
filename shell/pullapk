@@ -1,0 +1,6 @@
+#!/bin/sh
+
+adb shell pm path $1 |\
+sed 's/package://' |\
+tr -d '\r' |\
+xargs -I % adb pull % $1.apk
