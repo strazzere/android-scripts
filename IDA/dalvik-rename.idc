@@ -3,6 +3,7 @@
 // Attempt to make the function names look better -- avoid the ugly _def_ blah crap
 //
 // Created during #Hacksgiving 2012 @Lookout
+// Updated 2014.2.12 to speed up and block user input to prevent issues
 //
 // Tim "diff" Strazzere
 // <diff@lookout.com>
@@ -37,7 +38,6 @@ static strip_annoying_characters(name) {
         name = substr(name, 0, strstr(name, "__")) + "_" + substr(name, strstr(name, "__") + 2, -1);
     }
 
-    Message("Stripped out the characters: %s\n", name);
     return name;
 }
 
@@ -62,26 +62,22 @@ static main() {
 
     addr = get_location_by_hooks(addr);
 
+    SetStatus(IDA_STATUS_WORK);
     while(addr != -1) {
         name = Name(addr);
         userName = NameEx(BADADDR, addr);
-        if(name == "") {
-//                Message("Issue looking up the function name!\n");
-        } else {
+        if(name != "") {
             if(name != userName) {
                 Message("Detected a user defined name of [ %s ] will no overwrite!\n", userName);
             } else {
 	        if(is_dalvik_function(name)) {
-                    Message("\n%s found at %x\n Going to attempt to rename\n", name, addr);
 		    appendable = 0;
 		    new_name = new_name_with_appendable = strip_annoying_characters(name);
 		    // Loop through a few tries incase the name already exists
 		    while(!MakeNameEx(addr, new_name_with_appendable, 0)) {
-		        Message("Failure renaming making attempt : %i\n", appendable + 1);
 			new_name_with_appendable = new_name + sprintf("_%i", appendable);
 			appendable++;
 		    }
-		    Message("Successfully renamed...\n");
 		}
             }
         }
@@ -89,7 +85,6 @@ static main() {
 	    original = addr;
    	    addr = NextAddr(addr);
 	    if(addr == -1) {
-	       Message("Job looks like it's done...\n");
                firstpass = 0;
      	    }
 	} else {
@@ -97,4 +92,5 @@ static main() {
             addr = original;
         }
     }
+    SetStatus(IDA_STATUS_READY);
 }
