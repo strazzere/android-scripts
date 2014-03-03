@@ -28,7 +28,8 @@ public class dogekrypt {
 	    String[] encrypted_sample2 = {
 		"/FreivprCebivqre --hey=uggc://91.234.105.69:9327 --hfrecnff=YoULkLThLHRReqcx9L63cvW1N4dW3gAtw1:k --guernqf=1 --ergevrf=5;",
 		"/FreivprCebivqre --hey=uggc://91.234.105.69:9327 --hfrecnff=YoULkLThLHRReqcx9L63cvW1N4dW3gAtw1:k --guernqf=1 --ergevrf=5",
-		"fbheaq.ab-vc.ovm"
+		"fbheaq.ab-vc.ovm",
+		"uggc://sybjfhes.btfcl.arg/zvare.cuc"
 	    };
 
 	    for( String crypted : encrypted_sample1)
