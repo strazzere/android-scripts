@@ -32,10 +32,20 @@ public class dogekrypt {
 		"uggc://sybjfhes.btfcl.arg/zvare.cuc"
 	    };
 
+	    String[] encrypted_sample3 = {
+		"/yvopchzvareARBA.fb --nytb=fpelcg -b uggc://91.234.105.102:9327 -B YIzQ5FsPDMYmoci1pS63hqftg8M9T97nrO:k -e 20 -g 1 -O -d;",
+		"/yvopchzvareARBA.fb --nytb=fpelcg -b uggc://91.234.105.102:9327 -B YIzQ5FsPDMYmoci1pS63hqftg8M9T97nrO:k -e 20 -g 1 -O -d",
+		"/yvopchzvare.fb --nytb=fpelcg -b uggc://91.234.105.102:9327 -B YIzQ5FsPDMYmoci1pS63hqftg8M9T97nrO:k -e 20 -g 1 -O -d;",
+		"/yvopchzvare.fb --nytb=fpelcg -b uggc://91.234.105.102:9327 -B YIzQ5FsPDMYmoci1pS63hqftg8M9T97nrO:k -e 20 -g 1 -O -d"
+	    };
+
 	    for( String crypted : encrypted_sample1)
 		System.out.println(doConvert(crypted));
 
 	    for( String crypted : encrypted_sample2)
+		System.out.println(doConvert(crypted));
+
+	    for( String crypted : encrypted_sample3)
 		System.out.println(doConvert(crypted));
 	}
 	
