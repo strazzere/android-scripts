@@ -1,0 +1,59 @@
+//--------------------------------------
+//--- 010 Editor v5.0beta2 Script File
+//
+// File:     RazStealerDecrypter.1sc
+// Author:   Tim Strazzere <diff@lookout.com> <strazz@gmail.com>
+// Revision: 1.0
+// Purpose:  A quick script to decrypt RStealer.A/RazStealer
+//           just as a test to see if it's worth while trying
+//           to use 010Editor scripts for templates.
+//
+//           Requires DEXTemplate.bt to be run first.
+//--------------------------------------
+
+string decrypt(string data) {
+    // Use temp variable so we don't kill the dex file string
+    string temp = data;
+    string output = "";
+    int last_underscore;
+    if(Strstr(data, "_") == -1)
+        return "";
+
+    while((last_underscore = Strstr(temp, "_")) != -1) {
+        // Parse number
+        if(Atoi(SubStr(temp, 0, last_underscore)) == 0) {
+            return "";
+        }
+        SPrintf(output, "%s%c", output, Sqrt(Atoi(SubStr(temp, 0, last_underscore))));
+        // Remove the chunk we just looked at
+        temp = SubStr(temp, last_underscore + 1, -1);
+    }
+
+    // Encrypted strings should have no left over characters
+    if(Strlen(temp) != 0)
+        return "";
+
+    return output;
+}
+
+if(ReadUByte(0) != 0x64 && ReadUByte(1) != 0x65 && ReadUByte(2) != 0x78) {
+    return "Doesn't appear to be a DEX file - quitting!\n";
+}else if(!exists(dex_string_ids)) {
+    return "DEXTemplate doesn't appear to have been run!";
+}
+
+// Strings indexes must be sorted alphanumerical, so if we find
+// a grouping of encrypted strings we can stop once we detect a
+// non-encrypted string
+
+// Number of string indexes is dex_string_ids size / uint size
+int i, found_encrypted = 0;
+for(i = 0; i < sizeof(dex_string_ids)/4; i++) {
+    if(decrypt(dex_string_ids.string_id[i].string_data.data) != "") {
+        Printf("[ %s ] was decrypted from [ %s ]\n", decrypt(dex_string_ids.string_id[i].string_data.data), dex_string_ids.string_id[i].string_data.data);
+    } else {
+        if(found_encrypted) {
+            break;
+        }
+    }
+}
