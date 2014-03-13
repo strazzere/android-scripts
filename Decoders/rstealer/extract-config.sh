@@ -8,14 +8,14 @@ fi
 for file in `find $1`
 do
 
-    if [ -f $file ]
+    if [ -f "$file" ]
       then
       # Extract and decode assests
-      java -jar ~/bin/apktool.jar -q d $file tmp/
+      java -jar ~/bin/apktool.jar -q d "$file" tmp/
 
       # Search for files
       PACKAGE_NAME=`grep "package=" tmp/AndroidManifest.xml | sed 's/^.*package="//' | sed 's/".*//'`
-      SHA1=`shasum $file`
+      SHA1=`shasum "$file"`
 
       echo "Sha1:              $SHA1"
       echo "Package Name:      $PACKAGE_NAME"
@@ -33,15 +33,16 @@ do
 	  USE_ROOT=`grep -B 2 ">useRoot" $GLOBAL | head -1 | cut -d\" -f2`
 	  ZIP_DATA=`grep -B 2 ">zipData" $GLOBAL | head -1 | cut -d\" -f2`
 	  DELETE_ZIP=`grep -B 2 ">deleteZip" $GLOBAL | head -1 | cut -d\" -f2`
-	  TRIGGER_START=`grep -B 2 ">triggerStart" $GLOBAL | head -1 | cut -d\" -f2`
 	  TRIGGER_VIA_SMS=`grep -B 2 ">triggerViaSms" $GLOBAL | head -1 | cut -d\" -f2`
 	  RUN_ON_STARTUP=`grep -B 2 ">runOnStartup" $GLOBAL | head -1 | cut -d\" -f2`
 	  MINUTE_OFFSET=`grep -B 2 ">minuteOffset" $GLOBAL | head -1 | cut -d\" -f2`
 	  USE_DATA=`grep -B 2 ">useData" $GLOBAL | head -1 | cut -d\" -f2`
-	  MAIL_PROVIDER=`grep -B 2 ">mailProvider" $GLOBAL | head -1 | cut -d\" -f2`
+	  MAIL_PROVIDER=`grep -B 6 ">mailProvider" $GLOBAL | head -1 | cut -d\" -f2`
 	  USE_FTP=`grep -B 2 ">useFTP" $GLOBAL | head -1 | cut -d\" -f2`
 
 	  # Encoded values we must decode
+	  TRIGGER_START=`grep -B 2 ">triggerStart" $GLOBAL | head -1 | cut -d\" -f2`
+	  TRIGGER_START=`$DECODE $TRIGGER_START`
           MY_MAIL=`grep -B 2 ">myMail" $GLOBAL | head -1 | cut -d\" -f2`
           MY_MAIL=`$DECODE $MY_MAIL`
           MY_PASSWORD=`grep -B 2 ">myPassword" $GLOBAL | head -1 | cut -d\" -f2`
@@ -83,6 +84,7 @@ do
     	  echo "FTP_PW:            $FTP_PW"
     	  echo "FTP_PORT:          $FTP_PORT"
     	  echo "ANDROID_DATA_PATH: $ANDROID_DATA_PATH"
+	  echo "\n"
       else
 	  echo "Global config file not found!"
       fi
