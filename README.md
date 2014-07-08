@@ -7,3 +7,4 @@ Directories;
  - IDA - Contains IDC/python scripts
  - Decoders - Contains decoders (often written in ruby) for malware
  - file - Contains proper filetyping for Android files using the 'file' command
+ - shell - Contains scripts to be used via bash shell
