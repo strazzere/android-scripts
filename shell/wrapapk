@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Tired of fixing the long package names for doing LD_PRELOAD
+# hacks so this will automatically trip and set the property
+#
+# Assumes there is only one device connect to adb and you have
+# shell -- uses "su sh" since just "su" causes a failure on
+# real devices for me
+
+KEY=$1
+VALUE=$2
+
+trim_key() {
+    echo $(echo -n "wrap.$KEY" | cut -c1-31)
+}
+
+echo $(adb shell su sh setprop $(trim_key) $VALUE)
