@@ -1,0 +1,12 @@
+#!/bin/bash
+
+start_android_server() {
+    echo $(adb shell su sh /data/local/tmp/android_server & disown);
+}
+
+forward_tcp() {
+    echo $(adb forward tcp:23946 tcp:23946)
+}
+
+$(start_android_server)
+$(forward_tcp)
