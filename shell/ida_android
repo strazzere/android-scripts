@@ -1,12 +1,21 @@
 #!/bin/bash
 
 start_android_server() {
-    echo $(adb shell su sh /data/local/tmp/android_server & disown);
+    adb shell "su sh /data/local/tmp/android_server -p$PORT" & > /dev/null
 }
 
 forward_tcp() {
-    echo $(adb forward tcp:23946 tcp:23946)
+    adb forward tcp:$PORT tcp:$PORT
 }
 
-$(start_android_server)
-$(forward_tcp)
+PORT=23946
+if [ $1 == "-p*" ]
+then
+    echo 'Attempting to bind and forward default port $PORT'
+else
+    echo 'Attempting to bind and forward port $PORT'
+    PORT=${1:2}
+fi
+
+start_android_server $PORT
+forward_tcp $PORT
