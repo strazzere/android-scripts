@@ -1,4 +1,12 @@
 #!/bin/bash
+#
+# Currently in IDA Pro 6.6.140605 there is an issue where the
+# Dalvik debugger (JDWP) will assign the local port to the android_server
+# default (2346) - meaning if you attempt to do the normal forward of the
+# remote port 2346 to the local port, it will collide and one will die.
+# There is no actual input for changing the forward on the JDWP port currently
+# so I suggest changing your default android_server remote port here.
+#
 
 start_android_server() {
     adb shell "su sh /data/local/tmp/android_server -p$PORT" &
