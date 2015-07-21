@@ -3,7 +3,7 @@
 # Just playing around with fast and easy commenting for
 # IDA Pro, mainly used on some ELF ARM binaries
 #
-# Tim Strazzere <diff@lookout.com
+# Tim Strazzere <diff@lookout.com>
 #
 
 def strxor(a, b):
