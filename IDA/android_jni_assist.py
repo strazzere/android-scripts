@@ -61,20 +61,20 @@ JNIVersion = [
 # Utility functions
 #
 def info(formatted_string):
-    print formatted_string
+    print(formatted_string)
 
 def error(formatted_string):
-    print 'ERROR - %s' % formatted_string
+    print('ERROR - %s' % formatted_string)
 
 def debug(formatted_string):
     if DEBUG:
-        print 'DEBUG - %s' % formatted_string
+        print('DEBUG - %s' % formatted_string)
 
 #
 # Main functionality
 #
 def create_enum(enum_name, member_infos, offset, increment):
-    return_id = AddEnum(-1, enum_name, 0x1100000);
+    return_id = idc.add_enum(-1, enum_name, 0x1100000);
 
     if return_id == BADADDR:
         error('Unable to create enum : %s' % enum_name)
@@ -83,14 +83,14 @@ def create_enum(enum_name, member_infos, offset, increment):
     for member_info in member_infos:
         debug("Attempting to create enum member and comment : %s.%s -> %s" % (enum_name, member_info[0], member_info[1]))
 
-        if AddConstEx(return_id, member_info[0], offset, -1) == 0:
-            const_id = GetConstEx(return_id, offset, 0, -1)
+        if idc.add_enum_member(return_id, member_info[0], offset, -1) == 0:
+            const_id = idc.get_enum_member(return_id, offset, 0, -1)
 
             if const_id == -1:
                 debug('Unable to get constant id for : %s.%s' % (enum_name, member_info[0]))
 
             else:
-                if SetConstCmt(const_id, member_info[1], 1):
+                if ida_enum.set_enum_member_cmt(const_id, member_info[1], 1):
                     debug('Enum value created : %s.%s' % (enum_name, member_info[0]))
 
                 else:
@@ -109,7 +109,7 @@ def create_or_find_enum(enum_name, member_infos, offset, increment):
 
     if enum_id == -1:
         debug('Unable to create enum, attempting to find one')
-        enum_id = GetEnum(enum_name)
+        enum_id = ida_enum.get_enum(enum_name)
         if enum_id == -1:
             error('Could create or find a enum')
             return False
@@ -125,19 +125,19 @@ def find_function_address(function_name):
 
 def is_enum(addr):
     patterns = []
-    if GetMnem(addr) in THREE_MNEM:
+    if idc.print_insn_mnem(addr) in THREE_MNEM:
         patterns = THREE_PATTERNS
-    elif GetMnem(addr) in TWO_MNEM:
+    elif idc.print_insn_mnem(addr) in TWO_MNEM:
         patterns = TWO_PATTERNS
 
     for pattern in patterns:
         # This means we are in TWO_PATTERNS mode
-        if(GetOpnd(addr, 1) == 'SP'):
-            if pattern in GetOpnd(addr, 2):
+        if(idc.print_operand(addr, 1) == 'SP'):
+            if pattern in idc.print_operand(addr, 2):
                 return True
         else:
             # THREE_PATTERNS mode
-            if pattern in GetOpnd(addr, 1):
+            if pattern in idc.print_operand(addr, 1):
                 return True
 
     return False
@@ -149,7 +149,7 @@ def mark_enums(enum_id, method):
         return False
 
     debug('Found function starting @ 0x%x' % addr)
-    func_end = Chunks(addr).next()[1]
+    func_end = next(Chunks(addr))[1]
     if(func_end < addr):
         error('Unable to find good function end for %s' % method)
         return False
@@ -159,13 +159,13 @@ def mark_enums(enum_id, method):
     while(addr < func_end):
         if is_enum(addr):
             debug('Found a enum to mark @ 0x%x' % addr)
-            ret = OpEnumEx(addr, 1, enum_id, 0)
+            ret = idc.op_enum(addr, 1, enum_id, 0)
             # Try one more time due to IDA Pro bug
             if ret == -1:
-                ret = OpEnumEx(addr, 1, enum_id, 0)
-                print "Tried twice, result %s" % ret
+                ret = idc.op_enum(addr, 1, enum_id, 0)
+                error("Tried twice, result %s" % ret)
 
-        addr = FindCode(addr, SEARCH_DOWN)
+        addr = ida_search.find_code(addr, SEARCH_DOWN)
 
     return True
 
@@ -180,11 +180,11 @@ def jni_jvm_enum_init():
 
 def is_const(addr):
     # This might be incorrect to do
-    if GetMnem(addr) not in JNI_VERSION_MNEM:
+    if idc.print_insn_mnem(addr) not in JNI_VERSION_MNEM:
         return False
 
     for value in JNI_VERSION_VALUES:
-        if value in GetOpnd(addr, 1):
+        if value in idc.print_operand(addr, 1):
             return True
 
     return False
@@ -200,7 +200,7 @@ def jni_constants():
             return False
 
         debug('Found function starting @ 0x%x' % addr)
-        func_end = Chunks(addr).next()[1]
+        func_end = next(Chunks(addr))[1]
         if(func_end < addr):
             error('Unable to find good function end for %s' % method)
             return False
@@ -210,13 +210,13 @@ def jni_constants():
         while(addr < func_end):
             if is_const(addr):
                 debug('Found a const to mark @ 0x%x' % addr)
-                ret = OpEnumEx(addr, 1, const_enum_id, 0)
+                ret = idc.op_enum(addr, 1, const_enum_id, 0)
                 # Try one more time due to IDA Pro bug
                 if ret == -1:
-                    ret = OpEnumEx(addr, 1, const_enum_id, 0)
+                    ret = idc.op_enum(addr, 1, const_enum_id, 0)
                     debug("Tried twice, result %s" % ret)
 
-            addr = FindCode(addr, SEARCH_DOWN)
+            addr = ida_search.find_code(addr, SEARCH_DOWN)
 
     return True
 
