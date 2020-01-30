@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+# Because nothing now a days have one dex file,
+# and I'm tired to telling baksmali all the files
+# while trying to keep them in seperate dirs...
+#
+# diff@protonmail.com
+
+
+classes=()
+outdir=""
+
+previous=""
+for arg in $@
+do
+    if [[ "${arg}" == *.dex ]]
+    then
+	classes+=("${arg}")
+    fi
+
+    if [[ previous == "-o" ]]
+    then
+	outdir="${arg}"
+    fi
+    previous="${arg}"
+done
+
+if [ -z "$outdir" ]
+then
+    outdir="out"
+fi
+
+$(mkdir -p $outdir)
+
+for dex in "${classes[@]}"
+do
+    dex_dir=${dex//[\.]/_}
+    baksmali d "${dex}" -o "${outdir}/${dex_dir}"
+done
