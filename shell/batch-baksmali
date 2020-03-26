@@ -6,7 +6,6 @@
 #
 # diff@protonmail.com
 
-
 classes=()
 outdir=""
 
@@ -18,7 +17,7 @@ do
 	classes+=("${arg}")
     fi
 
-    if [[ previous == "-o" ]]
+    if [[ "$previous" == "-o" ]]
     then
 	outdir="${arg}"
     fi
