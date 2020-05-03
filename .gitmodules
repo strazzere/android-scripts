@@ -1,0 +1,3 @@
+[submodule "visualization/droidgraph"]
+	path = visualization/droidgraph
+	url = https://github.com/DarioI/droidgraph
